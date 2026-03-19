@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { TimeBlock, HourlyInput, getAssignmentTypeLabel, formatTime, formatDuration, getHoursRemaining } from '@/lib/timeline'
+import AIAssistant from './AIAssistant'
+import type { AssignmentInput } from '@/lib/timeline'
 
 interface HourlyTimelineProps {
   input: HourlyInput
@@ -186,6 +188,15 @@ export default function HourlyTimeline({ input, blocks, onReset }: HourlyTimelin
           <span aria-hidden>↺</span><span>New Plan</span>
         </button>
       </div>
+
+      {/* AI Assistant — convert HourlyInput to AssignmentInput shape */}
+      <AIAssistant input={{
+        title: input.title,
+        type: input.type,
+        startDate: input.startDateTime,
+        dueDate: input.dueDateTime,
+        pages: input.pages,
+      } as AssignmentInput} />
     </div>
   )
 }
