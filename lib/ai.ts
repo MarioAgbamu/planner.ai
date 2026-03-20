@@ -1,5 +1,3 @@
-// ─── Shared AI context types ──────────────────────────────────────────────────
-
 export interface AssignmentContext {
   title: string
   type: 'essay' | 'research_paper' | 'presentation' | 'project' | 'lab_report'
@@ -8,38 +6,52 @@ export interface AssignmentContext {
   pages?: number
 }
 
-// ─── Shared call helper ───────────────────────────────────────────────────────
-// Uses the Anthropic Messages API. Swap fetch URL + headers for OpenAI if needed:
-//   url: 'https://api.openai.com/v1/chat/completions'
-//   headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` }
-//   body model: 'gpt-4o'
-
 export async function callAI(systemPrompt: string, userPrompt: string): Promise<string> {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const apiKey = process.env.OPENAI_API_KEY
+
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not set. Add it in Vercel → Settings → Environment Variables.')
+  }
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY ?? '',
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'gpt-4o-mini',
       max_tokens: 600,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
     }),
   })
 
   if (!response.ok) {
-    const err = await response.text()
-    throw new Error(`AI API error ${response.status}: ${err}`)
+    const errText = await response.text()
+    try {
+      const errJson = JSON.parse(errText)
+      const msg = errJson?.error?.message ?? errText
+      if (response.status === 401) throw new Error('Invalid API key. Check your OPENAI_API_KEY in Vercel environment variables.')
+      if (response.status === 429) throw new Error('Rate limit reached. Please wait a moment and try again.')
+      if (response.status === 400) throw new Error(`Bad request: ${msg}`)
+      throw new Error(`API error (${response.status}): ${msg}`)
+    } catch (parseErr) {
+      if (parseErr instanceof Error && parseErr.message.includes('API error')) throw parseErr
+      if (parseErr instanceof Error && parseErr.message.includes('Invalid API')) throw parseErr
+      if (parseErr instanceof Error && parseErr.message.includes('Rate limit')) throw parseErr
+      if (parseErr instanceof Error && parseErr.message.includes('Bad request')) throw parseErr
+      throw new Error(`API error ${response.status}: ${errText}`)
+    }
   }
 
   const data = await response.json()
-  return data.content?.[0]?.text ?? ''
+  const text = data.choices?.[0]?.message?.content
+  if (!text) throw new Error('Empty response from AI. Please try again.')
+  return text
 }
-
-// ─── Shared system prompt base ────────────────────────────────────────────────
 
 export function buildSystemPrompt(ctx: AssignmentContext): string {
   return `You are a concise academic assistant helping a student with their ${ctx.type.replace('_', ' ')}.
