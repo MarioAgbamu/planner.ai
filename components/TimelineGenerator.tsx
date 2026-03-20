@@ -8,6 +8,7 @@ import {
 import ProgressBar from './ProgressBar'
 import TaskList from './TaskList'
 import UrgencyIndicator from './UrgencyIndicator'
+import AIAssistant from './AIAssistant'
 
 interface TimelineGeneratorProps {
   input: AssignmentInput
@@ -214,6 +215,7 @@ export default function TimelineGenerator({ input, tasks, onReset, onShare }: Ti
           <span aria-hidden>⚠ </span>{exportError}
         </div>
       )}
+        <AIAssistant input={input} />
     </div>
   )
 }
