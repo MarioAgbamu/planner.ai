@@ -1,15 +1,16 @@
 // Server Component — Googlebot receives complete HTML on first byte.
 // Every h1, h2, h3, paragraph, and list item is crawlable with zero JS.
-// The interactive planner is an isolated client island (PlannerIsland).
+// Client islands: PlannerIsland (interactive tool) + ReviewSection (ratings).
 
 import { Suspense } from 'react'
 import PlannerIsland from '@/components/PlannerIsland'
+import ReviewSection from '@/components/ReviewSection'
 
 export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-base)', position: 'relative', overflowX: 'hidden' }}>
 
-      {/* Decorative background — aria-hidden, no SEO value */}
+      {/* Decorative background */}
       <div aria-hidden style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-15%', left: '-10%', width: '55vw', height: '55vw', maxWidth: 600, maxHeight: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,142,247,0.13) 0%, transparent 70%)' }} />
         <div style={{ position: 'absolute', top: '5%', right: '-15%', width: '45vw', height: '45vw', maxWidth: 500, maxHeight: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(155,109,255,0.10) 0%, transparent 70%)' }} />
@@ -21,13 +22,7 @@ export default function Home() {
       <nav style={{ position: 'relative', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid var(--border)', background: 'rgba(12,14,20,0.75)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Planner.ai logo"
-            width={32}
-            height={32}
-            style={{ borderRadius: 6, display: 'block', flexShrink: 0 }}
-          />
+          <img src="/logo.png" alt="Planner.ai logo" width={32} height={32} style={{ borderRadius: 6, display: 'block', flexShrink: 0 }} />
           <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
             Planner<span style={{ color: 'var(--accent-blue)' }}>.ai</span>
           </span>
@@ -41,43 +36,40 @@ export default function Home() {
       {/* ── Main ────────────────────────────────────────────────────── */}
       <main id="main-content" style={{ position: 'relative', zIndex: 10, maxWidth: 580, margin: '0 auto', padding: '40px 20px 80px' }}>
 
-        {/* ── Hero — h1 contains primary keyword cluster ─────────────────── */}
+        {/* ── Hero ─────────────────────────────────────────────────── */}
         <header style={{ textAlign: 'center', marginBottom: 36 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 14px', borderRadius: 99, background: 'rgba(79,142,247,0.08)', border: '1px solid rgba(79,142,247,0.2)', marginBottom: 22 }}>
             <span aria-hidden style={{ fontSize: '0.75rem' }}>✨</span>
-            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--accent-blue)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Free Assignment Planner</span>
+            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--accent-blue)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Free AI Assignment Planner</span>
           </div>
 
-          {/* h1: primary + secondary keywords in natural language */}
           <h1 style={{ fontSize: 'clamp(1.9rem, 6vw, 2.75rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: 14, color: 'var(--text-primary)' }}>
             Free online{' '}
             <span className="gradient-text">assignment planner</span>
             {' '}for students
           </h1>
 
-          {/* Subheading: natural language with keyword variants */}
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', maxWidth: 440, margin: '0 auto', lineHeight: 1.7 }}>
-            The free homework planner and study schedule generator built for college, university, and high school students. Enter your due date — get an instant, phase-by-phase plan. No signup.
+          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', maxWidth: 460, margin: '0 auto', lineHeight: 1.7 }}>
+            The free AI-powered homework planner and study schedule generator built for college, university, and high school students. Enter your due date — get an instant, phase-by-phase plan with an AI assignment assistant built in. No signup.
           </p>
 
-          {/* Feature pills — crawlable text, not icon-only */}
           <ul aria-label="Key features" style={{ listStyle: 'none', padding: 0, display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px 20px', marginTop: 20 }}>
             {[
+              { icon: '✦', text: 'AI assignment assistant' },
               { icon: '✍️', text: 'Essays & research papers' },
               { icon: '🧪', text: 'Lab reports & projects' },
               { icon: '⚡', text: 'Instant schedule generation' },
               { icon: '📅', text: 'Export to Google Calendar' },
-              { icon: '🔗', text: 'Shareable plan link' },
             ].map((f, i) => (
               <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span aria-hidden style={{ fontSize: '0.8rem' }}>{f.icon}</span>
+                <span aria-hidden style={{ fontSize: '0.8rem', color: i === 0 ? 'var(--accent-violet)' : undefined }}>{f.icon}</span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>{f.text}</span>
               </li>
             ))}
           </ul>
         </header>
 
-        {/* ── Interactive planner (client island) ──────────────────── */}
+        {/* ── Interactive planner ───────────────────────────────────── */}
         <Suspense fallback={
           <div style={{ height: 420, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 16, marginBottom: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: 20, height: 20, border: '2px solid var(--border-mid)', borderTopColor: 'var(--accent-blue)', borderRadius: '50%', animation: 'spinnerRotate 0.7s linear infinite' }} />
@@ -86,19 +78,20 @@ export default function Home() {
           <PlannerIsland />
         </Suspense>
 
-        {/* ── How it works ─────────────────────────────────────────── */}
+        {/* ── How it works ──────────────────────────────────────────── */}
         <section aria-labelledby="how-it-works" style={{ marginTop: 16, paddingBottom: 48, borderTop: '1px solid var(--border)', paddingTop: 48 }}>
           <h2 id="how-it-works" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.02em' }}>
             How the assignment planner works
           </h2>
           <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 24 }}>
-            Most students fail deadlines not because they lack ability, but because they start too late or plan too vaguely. This free academic planner takes your due date and works backward — dividing your available time into research-backed phases based on your assignment type.
+            Most students fail deadlines not because they lack ability, but because they start too late or plan too vaguely. This free academic planner and assignment deadline calculator takes your due date and works backward — dividing your available time into research-backed phases based on your assignment type.
           </p>
           <ol style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
               { n: '01', label: 'Step 1', title: 'Enter your assignment details', body: 'Choose your assignment type — essay, research paper, presentation, project, or lab report — and enter your start date and due date.' },
               { n: '02', label: 'Step 2', title: 'Get a phase-by-phase study schedule', body: 'The study plan generator automatically divides your time into weighted phases: research, drafting, editing, and more — with exact date ranges for each.' },
-              { n: '03', label: 'Step 3', title: 'Follow the plan and hit your deadline', body: 'Expand each phase to see actionable tips. Export the full schedule to Google Calendar or Apple Calendar as a .ics file, or share a link directly with classmates.' },
+              { n: '03', label: 'Step 3', title: 'Use the AI assistant to go deeper', body: 'Once your plan is generated, the AI assignment assistant helps you find sources, generate an outline, expand sections, and improve your draft — step by step, never doing the work for you.' },
+              { n: '04', label: 'Step 4', title: 'Follow the plan and hit your deadline', body: 'Export the full schedule to Google Calendar or share a link with classmates. Each phase has actionable tips so you always know what to do next.' },
             ].map((step) => (
               <li key={step.n} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                 <span aria-label={step.label} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 600, color: 'var(--accent-blue)', background: 'rgba(79,142,247,0.1)', padding: '4px 8px', borderRadius: 6, flexShrink: 0, marginTop: 2 }}>{step.n}</span>
@@ -111,7 +104,7 @@ export default function Home() {
           </ol>
         </section>
 
-        {/* ── Internal link to /last-minute — passes PageRank ──────── */}
+        {/* ── Internal link to /last-minute ────────────────────────── */}
         <div style={{ margin: '-16px 0 48px', padding: '14px 18px', background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.15)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div>
             <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>Deadline tonight?</p>
@@ -122,7 +115,35 @@ export default function Home() {
           </a>
         </div>
 
-        {/* ── Assignment types — entity-level content ───────────────── */}
+        {/* ── AI Assistant section — critical SEO gap fix ───────────── */}
+        <section aria-labelledby="ai-assistant" style={{ paddingBottom: 48, borderTop: '1px solid var(--border)', paddingTop: 48 }}>
+          <h2 id="ai-assistant" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.02em' }}>
+            Built-in AI assignment assistant
+          </h2>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: 20 }}>
+            Planner.ai includes a free AI study assistant built directly into your assignment plan. Unlike generic AI chatbots, this assistant is fully aware of your assignment title, type, and deadline — so every response is specific to your work. It guides you through the process without doing the assignment for you.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
+            {[
+              { icon: '📚', title: 'Find sources', body: 'Get 3 credible academic sources for your specific topic with summaries and key takeaways — in seconds.' },
+              { icon: '🗂️', title: 'Generate outline', body: 'Receive a structured outline with introduction idea, thesis statement, 3 main points, and conclusion direction.' },
+              { icon: '✍️', title: 'Expand sections', body: 'Choose any section of your assignment and get a starter paragraph to build from — one section at a time.' },
+              { icon: '✨', title: 'Improve your draft', body: 'Paste a paragraph and get targeted grammar, clarity, and structure improvements with an explanation of each change.' },
+              { icon: '💬', title: 'Ask anything', body: 'Chat directly with the AI essay planner about your specific assignment. Get unstuck in seconds.' },
+            ].map((f) => (
+              <article key={f.title} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '16px 18px' }}>
+                <p style={{ fontSize: '1.1rem', marginBottom: 8 }} aria-hidden>{f.icon}</p>
+                <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 5 }}>{f.title}</h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>{f.body}</p>
+              </article>
+            ))}
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 16, lineHeight: 1.65, fontStyle: 'italic' }}>
+            The AI assignment assistant is designed to help you start and structure your work — not complete it for you. All outputs are intentionally concise and partial, giving you the direction you need while keeping the thinking yours.
+          </p>
+        </section>
+
+        {/* ── Assignment types ──────────────────────────────────────── */}
         <section aria-labelledby="assignment-types" style={{ paddingBottom: 48, borderTop: '1px solid var(--border)', paddingTop: 48 }}>
           <h2 id="assignment-types" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.02em' }}>
             Planner for every assignment type
@@ -147,7 +168,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Who uses this planner — audience targeting section ────── */}
+        {/* ── Who uses this planner ─────────────────────────────────── */}
         <section aria-labelledby="who-uses" style={{ paddingBottom: 48, borderTop: '1px solid var(--border)', paddingTop: 48 }}>
           <h2 id="who-uses" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.02em' }}>
             Built for every type of student
@@ -171,7 +192,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FAQ — targets BoFu question queries, eligible for rich results ── */}
+        {/* ── Reviews — rating + comment section ───────────────────── */}
+        <Suspense fallback={
+          <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', borderTop: '1px solid var(--border)', paddingTop: 48 }}>
+            <div style={{ width: 20, height: 20, border: '2px solid var(--border-mid)', borderTopColor: 'var(--accent-blue)', borderRadius: '50%', animation: 'spinnerRotate 0.7s linear infinite' }} />
+          </div>
+        }>
+          <ReviewSection />
+        </Suspense>
+
+        {/* ── FAQ ───────────────────────────────────────────────────── */}
         <section aria-labelledby="faq" style={{ paddingBottom: 64, borderTop: '1px solid var(--border)', paddingTop: 48 }}>
           <h2 id="faq" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 24, letterSpacing: '-0.02em' }}>
             Frequently asked questions
@@ -187,8 +217,12 @@ export default function Home() {
                 a: 'An assignment planner is a tool that breaks a single assignment into smaller, time-boxed tasks based on your start date and due date. Rather than facing one large deadline, you work toward a series of smaller milestones — research by day 3, outline by day 4, first draft by day 8 — which dramatically reduces procrastination and last-minute panic.',
               },
               {
+                q: 'What does the AI assignment assistant do?',
+                a: 'The AI assistant is built into your plan and knows your specific assignment title, type, and deadline. It can find relevant academic sources, generate a structured outline, expand individual sections into starter paragraphs, improve your draft text, and answer questions about your assignment. It is designed to guide and structure your work — not write it for you.',
+              },
+              {
                 q: 'How do I plan a last-minute assignment?',
-                a: 'Enter today as your start date and your real due date. The planner will compress the phases to fit your remaining time, and the urgency indicator will flag how tight your schedule is. For very short deadlines, prioritise the writing phase — cut research short if needed, and leave at least 10–15% of your time for editing. For deadlines within 24 hours, use our dedicated last-minute planner.',
+                a: 'Enter today as your start date and your real due date. The planner will compress the phases to fit your remaining time, and the urgency indicator will flag how tight your schedule is. For deadlines within 24 hours, use our dedicated last-minute planner which creates an hour-by-hour schedule based on your exact deadline time.',
               },
               {
                 q: 'Does this work for university and college assignments?',
@@ -200,7 +234,7 @@ export default function Home() {
               },
               {
                 q: 'Is this assignment planner free?',
-                a: 'Completely free. No account, no signup, no payment. Enter your details and get your plan instantly.',
+                a: 'Completely free. No account, no signup, no payment. Enter your details and get your plan instantly. The AI assistant is also included at no cost.',
               },
               {
                 q: 'Can I share my assignment plan with a classmate or tutor?',
@@ -209,6 +243,10 @@ export default function Home() {
               {
                 q: 'Does the planner work for science lab reports?',
                 a: 'Yes — select "Lab Report" as your assignment type. The planner creates a 6-phase schedule covering pre-lab preparation, data collection, analysis, discussion, write-up, and final proofread. It is designed for STEM students at both high school and university level.',
+              },
+              {
+                q: 'Is there an AI essay planner or AI study assistant included?',
+                a: 'Yes — Planner.ai includes a built-in AI study assistant that is context-aware of your specific assignment. It helps you find sources, outline your work, expand sections, and improve your writing. It is different from a generic AI chatbot because it always knows what assignment you are working on and guides you through the plan phases.',
               },
             ].map((item, i) => (
               <div key={i} style={{ borderBottom: '1px solid var(--border)', paddingBottom: 20 }}>
@@ -221,23 +259,23 @@ export default function Home() {
 
       </main>
 
-      {/* ── Footer — keyword-bearing crawlable links ─────────────────── */}
+      {/* ── Footer ───────────────────────────────────────────────────── */}
       <footer style={{ position: 'relative', zIndex: 10, borderTop: '1px solid var(--border)', padding: '28px 24px' }}>
         <div style={{ maxWidth: 580, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Internal links — passes PageRank and helps Googlebot discover pages */}
           <nav aria-label="Site navigation" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px' }}>
             <a href="/" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Assignment Planner</a>
             <a href="/last-minute" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Last-Minute Planner</a>
+            <a href="/#ai-assistant" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>AI Assistant</a>
             <a href="/#assignment-types" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Essay Planner</a>
             <a href="/#assignment-types" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Research Paper Planner</a>
             <a href="/#assignment-types" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Lab Report Planner</a>
+            <a href="/#reviews-heading" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Reviews</a>
             <a href="/#faq" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>FAQ</a>
           </nav>
-          {/* Tagline with keyword reinforcement */}
           <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-            Planner.ai — free online assignment planner for students fighting procrastination.
+            Planner.ai — free AI-powered assignment planner for students fighting procrastination.
             Works for essays, research papers, presentations, projects, and lab reports.
-            No signup. Completely free.
+            Includes a built-in AI study assistant. No signup. Completely free.
           </p>
         </div>
       </footer>
