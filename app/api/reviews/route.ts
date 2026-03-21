@@ -1,9 +1,3 @@
-// /api/reviews — GET returns all reviews, POST adds a new one
-// Reviews are stored in Vercel KV (process.env.KV_REST_API_URL) if available,
-// otherwise falls back to an in-memory store for local dev.
-// To use Vercel KV: npm install @vercel/kv and add KV_REST_API_URL + KV_REST_API_TOKEN
-// in Vercel dashboard → Storage → KV → Connect.
-
 import { NextRequest, NextResponse } from 'next/server'
 
 export interface Review {
@@ -16,7 +10,6 @@ export interface Review {
   verified: boolean
 }
 
-// Seed reviews — realistic, varied, no fake superlatives
 const SEED_REVIEWS: Review[] = [
   {
     id: 'seed-1',
@@ -92,21 +85,30 @@ const SEED_REVIEWS: Review[] = [
   },
 ]
 
-// In-memory store for reviews submitted this session (server-side)
-// In production with Vercel KV these would persist across requests
 let sessionReviews: Review[] = []
 
+async function getRedis() {
+  const { Redis } = await import('@upstash/redis')
+  return new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
+}
+
+const useUpstash =
+  !!process.env.UPSTASH_REDIS_REST_URL &&
+  !!process.env.UPSTASH_REDIS_REST_TOKEN
+
 export async function GET() {
-  // Try Vercel KV first if configured
-  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+  if (useUpstash) {
     try {
-      const { kv } = await import('@vercel/kv')
-      const stored = await kv.get<Review[]>('reviews') ?? []
-      const all = [...SEED_REVIEWS, ...stored]
+      const redis = await getRedis()
+      const stored = await redis.get<Review[]>('reviews') ?? []
+      const all = [...stored, ...SEED_REVIEWS]
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       return NextResponse.json({ reviews: all })
-    } catch {
-      // Fall through to in-memory
+    } catch (err) {
+      console.error('Upstash GET error:', err)
     }
   }
 
@@ -121,11 +123,17 @@ export async function POST(req: NextRequest) {
     const { name, rating, comment, assignmentType } = body
 
     if (!name?.trim() || !comment?.trim() || !rating || rating < 1 || rating > 5) {
-      return NextResponse.json({ error: 'Name, rating (1-5), and comment are required.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Name, rating (1-5), and comment are required.' },
+        { status: 400 }
+      )
     }
 
     if (comment.trim().length < 10) {
-      return NextResponse.json({ error: 'Comment must be at least 10 characters.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Comment must be at least 10 characters.' },
+        { status: 400 }
+      )
     }
 
     const review: Review = {
@@ -138,19 +146,17 @@ export async function POST(req: NextRequest) {
       verified: false,
     }
 
-    // Try Vercel KV first
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    if (useUpstash) {
       try {
-        const { kv } = await import('@vercel/kv')
-        const existing = await kv.get<Review[]>('reviews') ?? []
-        await kv.set('reviews', [review, ...existing])
+        const redis = await getRedis()
+        const existing = await redis.get<Review[]>('reviews') ?? []
+        await redis.set('reviews', [review, ...existing].slice(0, 200))
         return NextResponse.json({ review })
-      } catch {
-        // Fall through
+      } catch (err) {
+        console.error('Upstash POST error:', err)
       }
     }
 
-    // In-memory fallback
     sessionReviews = [review, ...sessionReviews].slice(0, 100)
     return NextResponse.json({ review })
   } catch (err) {
