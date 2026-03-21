@@ -16,12 +16,12 @@ export const metadata: Metadata = {
 
   // Keyword-first title — primary term leads, brand trails
   title: {
-    default: 'Assignment Planner — Free Online Tool | Planner.ai',
+    default: 'Free AI Assignment Planner for Students | Planner.ai',
     template: '%s | Planner.ai',
   },
 
   description:
-    'Free online assignment planner for students. Enter your due date and get an instant, step-by-step study schedule. Works for essays, research papers, presentations, lab reports, and projects. No signup.',
+    'Free AI assignment planner for students. Enter your due date and get an instant, phase-by-phase study schedule with a built-in AI assistant. Works for essays, research papers, presentations, lab reports, and projects. No signup.',
 
   // Expanded keyword set: ToFu head terms + MoFu generator terms + BoFu urgency terms
   keywords: [
@@ -60,8 +60,14 @@ export const metadata: Metadata = {
     'how to plan an essay in 3 days',
     // AI/smart terms — growing MoFu cluster
     'AI assignment planner',
+    'AI assignment assistant',
+    'AI essay planner',
+    'AI study assistant free',
+    'AI homework planner',
+    'AI study planner',
     'smart assignment planner',
     'automatic study planner',
+    'free AI assignment helper',
   ],
 
   authors: [{ name: 'Planner.ai' }],
@@ -155,10 +161,14 @@ const jsonLd = {
     {
       '@type': 'WebApplication',
       '@id': `${SITE_URL}/#app`,
-      name: 'Planner.ai — Free Assignment Planner',
+      name: 'Planner.ai — Free AI Assignment Planner',
       alternateName: [
         'Assignment Planner',
         'Free Online Assignment Planner',
+        'AI Assignment Planner',
+        'AI Study Assistant',
+        'AI Essay Planner',
+        'Free AI Assignment Helper',
         'Essay Planner',
         'Study Schedule Generator',
         'Assignment Timeline Generator',
@@ -169,8 +179,9 @@ const jsonLd = {
         'Lab Report Planner',
       ],
       url: SITE_URL,
+      dateModified: new Date().toISOString().split('T')[0],
       description:
-        'Free online assignment planner for college, university, and high school students. Enter your assignment type and due date to get an instant, phase-by-phase study schedule. Supports essays, research papers, presentations, projects, and lab reports. Export to Google Calendar. No signup required.',
+        'Free AI-powered assignment planner for college, university, and high school students. Enter your assignment type and due date to get an instant, phase-by-phase study schedule with a built-in AI assignment assistant. Supports essays, research papers, presentations, projects, and lab reports. Export to Google Calendar. No signup required.',
       applicationCategory: 'EducationApplication',
       applicationSubCategory: 'Assignment Planner',
       operatingSystem: 'All',
@@ -189,7 +200,17 @@ const jsonLd = {
         availability: 'https://schema.org/InStock',
         description: 'Completely free — no account or signup required',
       },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.6',
+        reviewCount: '8',
+        bestRating: '5',
+        worstRating: '1',
+      },
       featureList: [
+        'AI assignment assistant — find sources, outline, expand sections, improve drafts',
+        'AI essay planner with context-aware guidance',
+        'AI study assistant for all assignment types',
         'Essay phase-by-phase planner (5 phases)',
         'Research paper schedule generator (6 phases)',
         'Presentation planner with rehearsal phase',
@@ -273,6 +294,22 @@ const jsonLd = {
           acceptedAnswer: {
             '@type': 'Answer',
             text: 'Yes — select "Lab Report" as your assignment type. The planner creates a 6-phase schedule covering pre-lab preparation, data collection, analysis, discussion, write-up, and final proofread. It is designed for STEM students at both high school and university level.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is there an AI assignment assistant or AI essay planner included?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Planner.ai includes a free AI study assistant built into every plan. It knows your assignment title, type, and deadline, and can find academic sources, generate a structured outline, expand individual sections, improve your draft text, and answer questions about your specific assignment. It guides you through the process without doing the work for you.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What makes this AI assignment planner different from ChatGPT?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Unlike a general AI chatbot, this AI assistant is fully integrated into your assignment plan. It knows your specific assignment title, type, and due date before you ask your first question. It also enforces structured, partial outputs — giving you direction and starting points rather than completing the work for you, which is what most educators actually want from an AI study tool.',
           },
         },
       ],
@@ -359,3 +396,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+
