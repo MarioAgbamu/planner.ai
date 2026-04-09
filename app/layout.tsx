@@ -16,12 +16,12 @@ export const metadata: Metadata = {
 
   // Keyword-first title — primary term leads, brand trails
   title: {
-    default: 'Free AI Assignment Planner for Students | Planner.ai',
+    default: 'Free AI Assignment Planner — Phase-by-Phase Plans + AI Assistant | Planner.ai',
     template: '%s | Planner.ai',
   },
 
   description:
-    'Free AI assignment planner for students. Enter your due date and get an instant, phase-by-phase study schedule with a built-in AI assistant. Works for essays, research papers, presentations, lab reports, and projects. No signup.',
+    'Free AI assignment planner for students. Enter your assignment and deadline — get an instant, phase-by-phase plan with a built-in AI assistant. Works for essays, research papers, lab reports, projects, presentations. Free, no signup, no account.',
 
   // Expanded keyword set: ToFu head terms + MoFu generator terms + BoFu urgency terms
   keywords: [
@@ -68,6 +68,12 @@ export const metadata: Metadata = {
     'smart assignment planner',
     'automatic study planner',
     'free AI assignment helper',
+    // Procrastination cluster — high volume informational
+    'how to stop procrastinating on assignments',
+    'how to start an assignment',
+    'assignment procrastination help',
+    'how to overcome blank page assignment',
+    'how to write assignment when stuck',
   ],
 
   authors: [{ name: 'Planner.ai' }],
@@ -90,9 +96,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: 'Assignment Planner — Free Online Tool',
+    title: 'Free AI Assignment Planner — Stop Procrastinating, Start Writing',
     description:
-      'Free assignment planner for students. Enter your due date → get an instant, phase-by-phase study schedule. Works for essays, research papers, presentations, projects and lab reports. No signup.',
+      'Stop staring at a blank page. Free AI assignment planner that turns your due date into a phase-by-phase plan — with an AI assistant to help you start every section. No signup.',
     url: SITE_URL,
     siteName: 'Planner.ai',
     type: 'website',
@@ -109,9 +115,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Assignment Planner — Free Online Tool | Planner.ai',
+    title: 'Free AI Assignment Planner — Stop Procrastinating | Planner.ai',
     description:
-      'Free assignment planner for students. Instant phase-by-phase study schedule from your due date. No signup.',
+      'Stop staring at a blank page. Free phase-by-phase assignment plan + built-in AI assistant. No signup.',
     site: '@plannerai',
   },
 
@@ -359,14 +365,17 @@ const jsonLd = {
       ],
     },
 
-    // 6. ItemList — signals /last-minute as a key page to Googlebot
+    // 6. ItemList — signals all landing pages to Googlebot
     {
       '@type': 'ItemList',
       '@id': `${SITE_URL}/#tools`,
-      name: 'Planner.ai Tools',
+      name: 'Planner.ai — Free Student Planning Tools',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Assignment Planner', url: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Last-Minute Assignment Planner', url: `${SITE_URL}/last-minute` },
+        { '@type': 'ListItem', position: 2, name: 'Essay Planner', url: `${SITE_URL}/essay-planner` },
+        { '@type': 'ListItem', position: 3, name: 'Study Planner', url: `${SITE_URL}/study-planner` },
+        { '@type': 'ListItem', position: 4, name: 'Assignment Planner Guide', url: `${SITE_URL}/assignment-planner` },
+        { '@type': 'ListItem', position: 5, name: 'Last-Minute Assignment Planner', url: `${SITE_URL}/last-minute` },
       ],
     },
   ],
