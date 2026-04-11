@@ -1,3 +1,4 @@
+
 export interface AssignmentContext {
   title: string
   type: 'essay' | 'research_paper' | 'presentation' | 'project' | 'lab_report'
@@ -6,11 +7,15 @@ export interface AssignmentContext {
   pages?: number
 }
 
+// ─── OpenAI call helper ───────────────────────────────────────────────────────
+
 export async function callAI(systemPrompt: string, userPrompt: string): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY
 
   if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is not set. Add it in Vercel → Settings → Environment Variables.')
+    throw new Error(
+      'OPENAI_API_KEY is not set. Go to Vercel → Settings → Environment Variables and add your OpenAI API key.'
+    )
   }
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -21,7 +26,8 @@ export async function callAI(systemPrompt: string, userPrompt: string): Promise<
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
-      max_tokens: 600,
+      max_tokens: 700,
+      temperature: 0.4,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -34,24 +40,29 @@ export async function callAI(systemPrompt: string, userPrompt: string): Promise<
     try {
       const errJson = JSON.parse(errText)
       const msg = errJson?.error?.message ?? errText
-      if (response.status === 401) throw new Error('Invalid API key. Check your OPENAI_API_KEY in Vercel environment variables.')
-      if (response.status === 429) throw new Error('Rate limit reached. Please wait a moment and try again.')
-      if (response.status === 400) throw new Error(`Bad request: ${msg}`)
-      throw new Error(`API error (${response.status}): ${msg}`)
+      if (response.status === 401) throw new Error('Invalid OpenAI API key. Check OPENAI_API_KEY in Vercel → Settings → Environment Variables.')
+      if (response.status === 429) throw new Error('OpenAI rate limit reached. Please wait a moment and try again.')
+      if (response.status === 400) throw new Error(`OpenAI bad request: ${msg}`)
+      throw new Error(`OpenAI error (${response.status}): ${msg}`)
     } catch (parseErr) {
-      if (parseErr instanceof Error && parseErr.message.includes('API error')) throw parseErr
-      if (parseErr instanceof Error && parseErr.message.includes('Invalid API')) throw parseErr
-      if (parseErr instanceof Error && parseErr.message.includes('Rate limit')) throw parseErr
-      if (parseErr instanceof Error && parseErr.message.includes('Bad request')) throw parseErr
-      throw new Error(`API error ${response.status}: ${errText}`)
+      // Re-throw known errors directly
+      if (parseErr instanceof Error && (
+        parseErr.message.startsWith('Invalid OpenAI') ||
+        parseErr.message.startsWith('OpenAI rate') ||
+        parseErr.message.startsWith('OpenAI bad') ||
+        parseErr.message.startsWith('OpenAI error')
+      )) throw parseErr
+      throw new Error(`OpenAI error ${response.status}: ${errText}`)
     }
   }
 
   const data = await response.json()
   const text = data.choices?.[0]?.message?.content
-  if (!text) throw new Error('Empty response from AI. Please try again.')
+  if (!text) throw new Error('Empty response from OpenAI. Please try again.')
   return text
 }
+
+// ─── System prompt ────────────────────────────────────────────────────────────
 
 export function buildSystemPrompt(ctx: AssignmentContext): string {
   return `You are a concise academic assistant helping a student with their ${ctx.type.replace('_', ' ')}.
