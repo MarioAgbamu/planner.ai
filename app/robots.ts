@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://planner.ai/sitemap.xml',
-    host: 'https://planner.ai',
+   sitemap: 'https://planory.ca/sitemap.xml',
+host: 'https://planory.ca',
   }
 }
