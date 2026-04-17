@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const SITE_URL = 'https://planner.ai'
+const SITE_URL = 'https://planory.ca'
 
 export const viewport: Viewport = {
   width: 'device-width',
