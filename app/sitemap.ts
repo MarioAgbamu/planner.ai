@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://planner.ai'
+  const base = 'https://planory.ca'
   const now = new Date()
 
   return [
